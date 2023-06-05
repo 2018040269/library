@@ -25,7 +25,7 @@ func Start() {
 }
 
 func booklListHandle(c *gin.Context) {
-	bookList, err := quetyAlllBook()
+	bookList, err := queryAlllBook()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err":  err.Error(),
@@ -45,22 +45,18 @@ func newBookhandle(c *gin.Context) {
 
 func createBookHandle(c *gin.Context) {
 	titleVal := c.PostForm("title")
-	priceVal := c.PostForm("price")
-	price, err := strconv.ParseFloat(priceVal, 64)
+	numberVal := c.PostForm("number")
+	number, err := strconv.ParseInt(numberVal, 10, 64)
 	if err != nil {
 		fmt.Println("转换失败")
 		return
 	}
-	err = insertAlllBook(titleVal, price)
+	err = insertAlllBook(titleVal, number)
 	if err != nil {
 		c.String(http.StatusOK, "插入数据失败")
 		return
 	}
 	c.Redirect(http.StatusMovedPermanently, "/book/list")
-}
-
-func insertAlllBook(titleVal string, price float64) {
-	panic("unimplemented")
 }
 
 func deleteHandle(c *gin.Context) {
@@ -105,9 +101,9 @@ func newHandle(c *gin.Context) {
 
 func updateHandle(c *gin.Context) {
 	titleVal := c.PostForm("title")
-	priceVal := c.PostForm("price")
+	numberVal := c.PostForm("number")
 	idVal := c.PostForm("id")
-	price, err := strconv.ParseFloat(priceVal, 64)
+	number, err := strconv.ParseInt(numberVal, 10, 64)
 	if err != nil {
 		fmt.Println("转换失败")
 		return
@@ -117,7 +113,7 @@ func updateHandle(c *gin.Context) {
 		fmt.Println("转换失败")
 		return
 	}
-	err = updateBook(titleVal, price, id)
+	err = updateBook(titleVal, number, id)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"err":  err.Error(),
