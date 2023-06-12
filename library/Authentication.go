@@ -36,7 +36,7 @@ func main() {
 	mux.HandleFunc("/protected", app.basicAuth(app.protectedHandler))
 
 	srv := &http.Server{
-		Addr:         ":4000",
+		Addr:         ":3306",
 		Handler:      mux,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	log.Printf("starting server on %s", srv.Addr)
-	err := srv.ListenAndServeTLS("./localhost.pem", "./localhost-key.pem")
+	err := srv.ListenAndServeTLS("./localhost+3.pem", "./localhost+3-key.pem")
 	log.Fatal(err)
 }
 

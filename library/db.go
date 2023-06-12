@@ -10,7 +10,7 @@ import (
 var db *sqlx.DB
 
 func initDB() (err error) {
-	dsn := "root:5210@tcp(127.0.0.1:9099)/go_test"
+	dsn := "root:5210@tcp(127.0.0.1:3306)/go_test"
 	db, err = sqlx.Connect("mysql", dsn)
 	if err != nil {
 		fmt.Printf("connect DB failed, err:%v\n", err)
