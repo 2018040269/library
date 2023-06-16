@@ -14,14 +14,14 @@ func Start() {
 		panic(err)
 	}
 	r := gin.Default()
-	r.LoadHTMLGlob("template/**/*")
+	r.LoadHTMLGlob("library/**/*")
 	r.GET("/book/list", booklListHandle)
 	r.GET("/book/new", newBookhandle)
 	r.POST("/book/new", createBookHandle)
 	r.GET("/book/delete", deleteHandle)
 	r.GET("/book/update", newHandle)
 	r.POST("/book/update", updateHandle)
-	r.Run()
+	r.Run(":3309")
 }
 
 func booklListHandle(c *gin.Context) {
@@ -33,10 +33,14 @@ func booklListHandle(c *gin.Context) {
 		})
 		return
 	}
-	c.HTML(http.StatusOK, "book/book_list.html", gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"data": bookList,
 	})
+	// c.HTML(http.StatusOK, "book/book_list.html", gin.H{
+	// 	"code": 0,
+	// 	"data": bookList,
+	// })
 }
 
 func newBookhandle(c *gin.Context) {
@@ -46,14 +50,18 @@ func newBookhandle(c *gin.Context) {
 func createBookHandle(c *gin.Context) {
 	titleVal := c.PostForm("title")
 	numberVal := c.PostForm("number")
-	number, err := strconv.ParseInt(numberVal, 10, 64)
+	fmt.Printf("number:%x\n", []byte(numberVal))
+	number, err := strconv.ParseFloat(numberVal, 64)
 	if err != nil {
 		fmt.Println("转换失败")
+		fmt.Println(err)
+
 		return
 	}
 	err = insertAlllBook(titleVal, number)
 	if err != nil {
-		c.String(http.StatusOK, "插入数据失败")
+		fmt.Println("转换失败2")
+
 		return
 	}
 	c.Redirect(http.StatusMovedPermanently, "/book/list")
@@ -63,6 +71,7 @@ func deleteHandle(c *gin.Context) {
 	idVal := c.Query("id")
 	id, err := strconv.ParseInt(idVal, 10, 64)
 	if err != nil {
+
 		c.JSON(http.StatusOK, gin.H{
 			"err":  err.Error(),
 			"code": 1,
@@ -72,7 +81,7 @@ func deleteHandle(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"err":  err.Error(),
-			"code": 1,
+			"code": 2,
 		})
 	}
 	c.Redirect(http.StatusMovedPermanently, "/book/list")
@@ -84,7 +93,7 @@ func newHandle(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"err":  err.Error(),
-			"code": 1,
+			"code": 3,
 		})
 		return
 	}
@@ -92,7 +101,7 @@ func newHandle(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err":  err.Error(),
-			"code": 1,
+			"code": 4,
 		})
 		return
 	}
@@ -103,7 +112,8 @@ func updateHandle(c *gin.Context) {
 	titleVal := c.PostForm("title")
 	numberVal := c.PostForm("number")
 	idVal := c.PostForm("id")
-	number, err := strconv.ParseInt(numberVal, 10, 64)
+
+	number, err := strconv.ParseFloat(numberVal, 64)
 	if err != nil {
 		fmt.Println("转换失败")
 		return
@@ -113,13 +123,15 @@ func updateHandle(c *gin.Context) {
 		fmt.Println("转换失败")
 		return
 	}
+
 	err = updateBook(titleVal, number, id)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"err":  err.Error(),
-			"code": 1,
+			"code": 5,
 		})
 		return
 	}
+
 	c.Redirect(http.StatusMovedPermanently, "/book/list")
 }
